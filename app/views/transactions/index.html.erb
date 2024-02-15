@@ -3,13 +3,15 @@
 <!-- Step 1: List all transactions, starting with the ICO -->
 <ol>
 
-<% for transaction in @transactions
+<% for transaction in @transactions%>
         
+    <%
     from_user = User.find_by({"id" => transaction["from_user_id"]})
     to_user = User.find_by({"id" => transaction["to_user_id"]})
     amount = transaction["amount"]
-        
-    if transaction["from_user_id"] == nil %>
+    %>
+
+    <% if transaction["from_user_id"] == nil %>
       <li>  
         Initial Coin Offering: <%= amount %> to <%= to_user["name"] %>
       </li>
@@ -24,6 +26,23 @@
 </ol>
 
 <!-- Step 2: Calculate and display the balances -->
+
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Balance</th>
+  </tr>
+
+  <% for user in @users %>
+  <tr>
+    <td> <%= user["name"] %> </td>
+    <td> 
+      <%= - Transaction.where({ "from_user_id" => user["id"]}).sum("amount") + Transaction.where({ "to_user_id" => user["id"]}).sum("amount") %>
+    </td>
+  </tr>
+  <% end %>
+<table>
+
 
 <!-- 
 Expected balances:
